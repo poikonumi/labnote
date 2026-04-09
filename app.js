@@ -9,27 +9,40 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    let editingEntryId = null;
     const newEntryBtn = document.getElementById('newEntryBtn');
     const closeFormBtn = document.getElementById('closeFormBtn');
     const formContainer = document.getElementById('diaryFormContainer');
     const diaryForm = document.getElementById('diaryForm');
     const exportBtn = document.getElementById('exportBtn');
+    const canvasHeaderTitle = document.querySelector('.canvas-header h2');
+    const formSubmitBtn = document.querySelector('.btn-save');
     
     // Set Header Date
     const headerDate = document.getElementById('currentDateDisplay');
     const today = new Date();
     headerDate.textContent = today.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' });
 
+    function getLocalISOTime() {
+        const now = new Date();
+        const tzOffset = now.getTimezoneOffset() * 60000;
+        return (new Date(now - tzOffset)).toISOString().slice(0, 16);
+    }
+
     // Init Date input
-    const tzOffset = today.getTimezoneOffset() * 60000;
-    const localISOTime = (new Date(today - tzOffset)).toISOString().slice(0, 16);
-    document.getElementById('datetime').value = localISOTime;
+    document.getElementById('datetime').value = getLocalISOTime();
 
     // Load Entries
     renderEntries();
 
     // Event Listeners
     newEntryBtn.addEventListener('click', () => {
+        editingEntryId = null;
+        canvasHeaderTitle.textContent = '新しいページ';
+        formSubmitBtn.textContent = 'このページを綴じる（保存）';
+        diaryForm.reset();
+        document.getElementById('datetime').value = getLocalISOTime();
+
         formContainer.style.display = 'block';
         newEntryBtn.style.display = 'none';
         
@@ -52,9 +65,11 @@ document.addEventListener('DOMContentLoaded', () => {
     exportBtn.addEventListener('click', exportAll);
 
     function saveEntry() {
-        const entry = {
-            id: Date.now(),
-            datetime: document.getElementById('datetime').value,
+        const entries = getEntries();
+        const datetimeVal = document.getElementById('datetime').value;
+
+        const entryData = {
+            datetime: datetimeVal,
             goal: document.getElementById('goal').value,
             method: document.getElementById('method').value,
             result: document.getElementById('result').value,
@@ -67,15 +82,26 @@ document.addEventListener('DOMContentLoaded', () => {
             smallWins: document.getElementById('smallWins').value
         };
 
-        const entries = getEntries();
-        entries.unshift(entry);
+        if (editingEntryId) {
+            const index = entries.findIndex(e => e.id == editingEntryId);
+            if (index !== -1) {
+                entryData.id = editingEntryId;
+                entryData.lastEdited = Date.now();
+                entries[index] = Object.assign({}, entries[index], entryData);
+            }
+        } else {
+            entryData.id = Date.now();
+            entries.unshift(entryData);
+        }
+
         localStorage.setItem('researchDiaries_v2', JSON.stringify(entries));
 
         // Close form & reset
         diaryForm.reset();
-        document.getElementById('datetime').value = localISOTime;
+        document.getElementById('datetime').value = getLocalISOTime();
         formContainer.style.display = 'none';
         newEntryBtn.style.display = 'flex';
+        editingEntryId = null;
         
         // Render
         renderEntries();
@@ -122,8 +148,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>`;
             };
 
+            let lastEditedHtml = '';
+            if (entry.lastEdited) {
+                const editDt = new Date(entry.lastEdited);
+                const editStr = editDt.toLocaleDateString('ja-JP', { year:'numeric', month:'short', day:'numeric' }) + ' ' + editDt.toLocaleTimeString('ja-JP', {hour:'2-digit', minute:'2-digit'});
+                lastEditedHtml = `<span class="edited-date">(編集済み: ${editStr})</span>`;
+            }
+
             page.innerHTML = `
-                <span class="page-date">${dateStr}</span>
+                <span class="page-date">${dateStr}${lastEditedHtml}</span>
                 <h3 class="page-title">${escapeHTML(entry.goal)}</h3>
                 
                 <div class="page-content">
@@ -141,6 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${renderField('メンタル / Small Wins', entry.smallWins)}
                 </div>
                 <div class="page-actions">
+                    <button class="btn-edit-single" data-id="${entry.id}">編集</button>
                     <button class="btn-download-single" data-id="${entry.id}">MD出力</button>
                     <button class="btn-delete-single" data-id="${entry.id}">削除</button>
                 </div>
@@ -156,6 +190,38 @@ document.addEventListener('DOMContentLoaded', () => {
                 const entry = entries.find(en => en.id == id);
                 if(entry) {
                     downloadMarkdown(generateMarkdown(entry), `diary_${id}.md`);
+                }
+            });
+        });
+
+        // Add event listeners for edit
+        document.querySelectorAll('.btn-edit-single').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = e.target.getAttribute('data-id');
+                const entry = entries.find(en => en.id == id);
+                if(entry) {
+                    editingEntryId = id;
+                    canvasHeaderTitle.textContent = '記録を編集する';
+                    formSubmitBtn.textContent = '編集内容を保存（更新）';
+                    
+                    document.getElementById('datetime').value = entry.datetime || '';
+                    document.getElementById('goal').value = entry.goal || '';
+                    document.getElementById('method').value = entry.method || '';
+                    document.getElementById('result').value = entry.result || '';
+                    document.getElementById('fileLocation').value = entry.fileLocation || '';
+                    document.getElementById('consideration').value = entry.consideration || '';
+                    document.getElementById('insights').value = entry.insights || '';
+                    document.getElementById('blockers').value = entry.blockers || '';
+                    document.getElementById('nextStep').value = entry.nextStep || '';
+                    document.getElementById('todo').value = entry.todo || '';
+                    document.getElementById('smallWins').value = entry.smallWins || '';
+
+                    formContainer.style.display = 'block';
+                    newEntryBtn.style.display = 'none';
+
+                    setTimeout(() => {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }, 50);
                 }
             });
         });

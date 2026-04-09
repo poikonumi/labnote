@@ -304,13 +304,21 @@ body {
     line-height: 1.8;
 }
 
+.edited-date {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-left: 0.5rem;
+    font-style: italic;
+    font-weight: normal;
+}
+
 .page-actions {
     display: flex;
     gap: 0.8rem;
     margin-top: 1.5rem;
 }
 
-.btn-download-single, .btn-delete-single {
+.btn-download-single, .btn-delete-single, .btn-edit-single {
     display: inline-block;
     font-family: var(--font-sans);
     font-size: 0.8rem;
@@ -323,11 +331,11 @@ body {
     background: transparent;
 }
 
-.btn-download-single {
+.btn-download-single, .btn-edit-single {
     color: var(--accent);
 }
 
-.btn-download-single:hover {
+.btn-download-single:hover, .btn-edit-single:hover {
     border-color: var(--accent);
     background: var(--paper-color);
 }
