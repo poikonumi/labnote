@@ -140,7 +140,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     ${renderField('メンタル / Small Wins', entry.smallWins)}
                 </div>
-                <button class="btn-download-single" data-id="${entry.id}">MD出力</button>
+                <div class="page-actions">
+                    <button class="btn-download-single" data-id="${entry.id}">MD出力</button>
+                    <button class="btn-delete-single" data-id="${entry.id}">削除</button>
+                </div>
             `;
 
             list.appendChild(page);
@@ -156,6 +159,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         });
+
+        // Add event listeners for single deletes
+        document.querySelectorAll('.btn-delete-single').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = e.target.getAttribute('data-id');
+                if(confirm("この記録を本当に削除しますか？ (Are you sure you want to delete this entry?)")) {
+                    deleteEntry(id);
+                }
+            });
+        });
+    }
+
+    function deleteEntry(id) {
+        let entries = getEntries();
+        entries = entries.filter(en => en.id != id);
+        localStorage.setItem('researchDiaries_v2', JSON.stringify(entries));
+        renderEntries();
     }
 
     function escapeHTML(str) {

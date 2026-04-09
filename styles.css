@@ -304,12 +304,16 @@ body {
     line-height: 1.8;
 }
 
-.btn-download-single {
-    display: inline-block;
+.page-actions {
+    display: flex;
+    gap: 0.8rem;
     margin-top: 1.5rem;
+}
+
+.btn-download-single, .btn-delete-single {
+    display: inline-block;
     font-family: var(--font-sans);
     font-size: 0.8rem;
-    color: var(--accent);
     text-decoration: none;
     border: 1px solid var(--border);
     padding: 0.4rem 1rem;
@@ -319,9 +323,22 @@ body {
     background: transparent;
 }
 
+.btn-download-single {
+    color: var(--accent);
+}
+
 .btn-download-single:hover {
     border-color: var(--accent);
     background: var(--paper-color);
+}
+
+.btn-delete-single {
+    color: #cc4444;
+}
+
+.btn-delete-single:hover {
+    border-color: #cc4444;
+    background: #fff8f8;
 }
 
 /* Animations */
