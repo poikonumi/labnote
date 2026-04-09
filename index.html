@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research Diary</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="diary-header">
+            <h1 class="diary-title">Research Diary</h1>
+            <p class="diary-subtitle" id="currentDateDisplay">... Loading ...</p>
+        </header>
+
+        <div class="actions">
+            <button class="btn-new-entry" id="newEntryBtn">
+                <span class="icon">✏️</span> 今日を記録する (New Entry)
+            </button>
+            <button class="btn-text" id="exportBtn">全てエクスポート</button>
+        </div>
+
+        <main>
+            <!-- The Diary Form Canvas -->
+            <section class="diary-canvas" id="diaryFormContainer" style="display: none;">
+                <button class="close-form-btn" id="closeFormBtn" title="閉じる">&times;</button>
+                <div class="canvas-header">
+                    <h2>新しいページ</h2>
+                    <input type="datetime-local" id="datetime" class="diary-input-date" required>
+                </div>
+                
+                <form id="diaryForm">
+                    <div class="diary-section">
+                        <h3>やったこと <span>What I did</span></h3>
+                        <div class="field">
+                            <label>今日のメインの活動 (Today's Focus)</label>
+                            <textarea id="goal" rows="1" placeholder="今日は何を中心に取り組みましたか？" required></textarea>
+                        </div>
+                        <div class="field">
+                            <label>実施した作業内容・手法 (Actions & Methods)</label>
+                            <textarea id="method" rows="2" placeholder="実際に試した手順、条件、アプローチ..."></textarea>
+                        </div>
+                        <div class="field">
+                            <label>結果・得られたデータ (Results)</label>
+                            <textarea id="result" rows="2" placeholder="どんな結果が出たか、成功や失敗の具体的な事実..."></textarea>
+                        </div>
+                        <div class="field">
+                            <label>今日作成・編集したファイルの場所 (Resources)</label>
+                            <input type="text" id="fileLocation" placeholder="フォルダ、ファイル名、リンクなど...">
+                        </div>
+                    </div>
+
+                    <div class="diary-section">
+                        <h3>思考 <span>Thought</span></h3>
+                        <div class="field">
+                            <label>考察</label>
+                            <textarea id="consideration" rows="2" placeholder="なぜこの結果になったと思うか？予想と違った点は？..."></textarea>
+                        </div>
+                        <div class="field">
+                            <label>違和感と気づき</label>
+                            <textarea id="insights" rows="2" placeholder="「なんとなく変だ」「ここが面白い」といった直感..."></textarea>
+                        </div>
+                        <div class="field">
+                            <label>詰まっているポイント</label>
+                            <textarea id="blockers" rows="1" placeholder="〇〇が分からなくて進めない..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="diary-section">
+                        <h3>未来 <span>Future</span></h3>
+                        <div class="field">
+                            <label>Next Step</label>
+                            <input type="text" id="nextStep" placeholder="明日、まず何から手をつけるか...">
+                        </div>
+                        <div class="field">
+                            <label>Todoリスト</label>
+                            <textarea id="todo" rows="2" placeholder="新たに必要だと思った文献調査や、修正すべき課題..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="diary-section">
+                        <h3>メンタル <span>Mental</span></h3>
+                        <div class="field">
+                            <label>小さな進歩 (Small Wins)</label>
+                            <input type="text" id="smallWins" placeholder="エラーが1つ消えた、論文を1本読んだなど...">
+                        </div>
+                    </div>
+
+                    <div class="form-footer">
+                        <button type="submit" class="btn-save">このページを綴じる（保存）</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Written Entries Timeline -->
+            <section class="diary-entries" id="entriesList">
+                <!-- Entries populated here -->
+            </section>
+        </main>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
